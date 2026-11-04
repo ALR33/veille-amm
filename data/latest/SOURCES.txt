@@ -1,4 +1,4 @@
-Instantané du 2026-11-04 22:37 UTC
+Instantané du 2026-11-04 22:40 UTC
 Page de téléchargement lue, 11 liens .txt trouvés
 OK CIS_CIP_Dispo_Spec.txt 158130 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CIP_Dispo_Spec.txt
 OK CIS_CIP_bdpm.txt 4153746 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CIP_bdpm.txt
