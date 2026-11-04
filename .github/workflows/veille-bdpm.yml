@@ -1,0 +1,55 @@
+name: Veille BDPM
+
+on:
+  schedule:
+    # Chaque lundi à 5 h 23 UTC
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/veille-bdpm.yml"
+      - "scripts/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: veille-bdpm
+  cancel-in-progress: false
+
+jobs:
+  instantane:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Garder l'instantané précédent
+        run: |
+          mkdir -p data/latest
+          rm -rf /tmp/precedent
+          cp -r data/latest /tmp/precedent
+
+      - name: Télécharger la base publique du médicament
+        run: python scripts/snapshot.py data/latest
+
+      - name: Comparer avec l'instantané précédent
+        run: python scripts/compare_bdpm.py /tmp/precedent data/latest reports
+
+      - name: Enregistrer
+        run: |
+          git config user.name "veille-bdpm"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data reports
+          if git diff --cached --quiet; then
+            echo "Aucun changement"
+          else
+            git commit -m "Veille BDPM $(date -u +%F)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
