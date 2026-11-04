@@ -20,6 +20,7 @@ CIS, DENOM, FORME, VOIES, STATUT_AMM, PROCEDURE, ETAT_COM, DATE_AMM, STATUT_BDM,
 P_CIS, P_CIP7, P_LIB, P_STATUT, P_ETAT, P_DATE, P_CIP13, P_AGREMENT, P_TAUX, P_PRIX = range(10)
 
 MAX_LIST = 40
+MITM_SET = set()
 
 
 def read_table(path):
@@ -75,6 +76,8 @@ def year(date_str):
 def tag(r):
     """Étiquette rapide pour repérer les produits proches de notre cible."""
     tags = []
+    if col(r, CIS) in MITM_SET:
+        tags.append("MITM")
     if "nationale" in col(r, PROCEDURE).lower():
         tags.append("procédure nationale")
     y = year(col(r, DATE_AMM))
@@ -109,6 +112,7 @@ def main():
     new_pres = read_table(new_dir / "CIS_CIP_bdpm.txt")
     old_spec = read_table(old_dir / "CIS_bdpm.txt")
     old_pres = read_table(old_dir / "CIS_CIP_bdpm.txt")
+    MITM_SET.update(col(r, 0) for r in (read_table(new_dir / "CIS_MITM.txt") or []))
 
     md = [f"# Veille BDPM du {today}", ""]
 
@@ -192,6 +196,15 @@ def main():
         spec = n_spec.get((col(n, 0),), [])
         dispo.append([col(n, 0), col(spec, DENOM), o_status.get(k[:3], "nouveau signalement"),
                       col(n, 3), col(n, 4), col(spec, TITULAIRE), col(n, 7)])
+
+    def mitm_first(rows, cis_index=0):
+        return sorted(rows, key=lambda r: 0 if r[cis_index] in MITM_SET else 1)
+
+    titulaires, statuts, commercialisation = mitm_first(titulaires), mitm_first(statuts), mitm_first(commercialisation)
+    arrets, dispo = mitm_first(arrets), mitm_first(dispo)
+    for r in dispo:
+        if r[0] in MITM_SET:
+            r[1] = (r[1] or r[0]) + " (MITM)"
 
     write_csv(rep_dir / "mitm_entrees.csv", ["CIS", "Dénomination", "Titulaire", "Exploitant"], mitm_entrees)
     write_csv(rep_dir / "mitm_sorties.csv", ["CIS", "Dénomination", "Titulaire", "Exploitant"], mitm_sorties)

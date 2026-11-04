@@ -10,7 +10,7 @@ Chaque lundi, GitHub télécharge les fichiers publics de la BDPM, les compare �
 - `reports/LATEST.md` est le dernier rapport, lisible sur téléphone.
 - `reports/AAAA-MM-JJ/` contient le détail en CSV.
 
-Le rapport liste les changements de titulaire, les présentations passées en arrêt de commercialisation, les changements de statut d'AMM, les baisses de prix et les spécialités retirées ou ajoutées.
+Le rapport liste les changements de titulaire, les présentations passées en arrêt de commercialisation, les changements de statut d'AMM, les ruptures et tensions signalées, les mouvements sur la liste des MITM, les baisses de prix et les spécialités retirées ou ajoutées. Les MITM apparaissent en tête de chaque liste.
 
 Le job peut aussi être lancé à la main depuis l'onglet Actions, avec « Run workflow ».
 
