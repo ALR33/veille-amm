@@ -91,6 +91,8 @@ def write_csv(path, header, rows):
 
 
 def bullet_list(lines, total):
+    if not lines:
+        return ["- Aucun mouvement"]
     out = [f"- {l}" for l in lines[:MAX_LIST]]
     if total > MAX_LIST:
         out.append(f"- … et {total - MAX_LIST} autres, voir le fichier CSV")
@@ -161,6 +163,43 @@ def main():
                 f"{po:.2f}", f"{pn:.2f}", f"{(pn / po - 1) * 100:.1f}", col(spec, TITULAIRE),
             ])
 
+    # MITM (CIS, ATC, dénomination, titulaire, exploitant, date, lien)
+    o_mitm = by_key(read_table(old_dir / "CIS_MITM.txt"), [0])
+    n_mitm = by_key(read_table(new_dir / "CIS_MITM.txt"), [0])
+    mitm_entrees = [[col(n_mitm[k], 0), col(n_mitm[k], 2), col(n_mitm[k], 3), col(n_mitm[k], 4)]
+                    for k in sorted(set(n_mitm) - set(o_mitm))] if o_mitm else []
+    mitm_sorties = [[col(o_mitm[k], 0), col(o_mitm[k], 2), col(o_mitm[k], 3), col(o_mitm[k], 4)]
+                    for k in sorted(set(o_mitm) - set(n_mitm))] if o_mitm else []
+    mitm_exploitant = [[col(n_mitm[k], 0), col(n_mitm[k], 2), col(o_mitm[k], 4), col(n_mitm[k], 4)]
+                       for k in sorted(set(o_mitm) & set(n_mitm))
+                       if col(o_mitm[k], 4) != col(n_mitm[k], 4)]
+
+    # Disponibilité (CIS, CIP13, code, statut, début, mise à jour, remise à disposition, lien)
+    # Le fichier garde un historique (plusieurs lignes par signalement), on compare donc
+    # les couples signalement et statut. Un couple absent de l'ancien fichier est un mouvement.
+    old_dispo_rows = read_table(old_dir / "CIS_CIP_Dispo_Spec.txt") or []
+    new_dispo_rows = read_table(new_dir / "CIS_CIP_Dispo_Spec.txt") or []
+    o_status, o_seen = {}, set()
+    for r in old_dispo_rows:
+        o_seen.add((col(r, 0), col(r, 1), col(r, 7), col(r, 3)))
+        o_status.setdefault((col(r, 0), col(r, 1), col(r, 7)), col(r, 3))
+    dispo, done = [], set()
+    for n in new_dispo_rows:
+        k = (col(n, 0), col(n, 1), col(n, 7), col(n, 3))
+        if k in o_seen or k in done:
+            continue
+        done.add(k)
+        spec = n_spec.get((col(n, 0),), [])
+        dispo.append([col(n, 0), col(spec, DENOM), o_status.get(k[:3], "nouveau signalement"),
+                      col(n, 3), col(n, 4), col(spec, TITULAIRE), col(n, 7)])
+
+    write_csv(rep_dir / "mitm_entrees.csv", ["CIS", "Dénomination", "Titulaire", "Exploitant"], mitm_entrees)
+    write_csv(rep_dir / "mitm_sorties.csv", ["CIS", "Dénomination", "Titulaire", "Exploitant"], mitm_sorties)
+    write_csv(rep_dir / "mitm_changements_exploitant.csv",
+              ["CIS", "Dénomination", "Ancien exploitant", "Nouvel exploitant"], mitm_exploitant)
+    write_csv(rep_dir / "disponibilite.csv",
+              ["CIS", "Dénomination", "Avant", "Après", "Début", "Titulaire", "Lien ANSM"], dispo)
+
     write_csv(rep_dir / "changements_titulaire.csv",
               ["CIS", "Dénomination", "Procédure", "Date AMM", "Repère", "Ancien titulaire", "Nouveau titulaire"],
               titulaires)
@@ -187,6 +226,8 @@ def main():
         f"- Baisses de prix, {len(baisses)}",
         f"- Spécialités retirées de la base, {len(retirees)}",
         f"- Nouvelles spécialités, {len(nouvelles)}",
+        f"- Signalements de disponibilité nouveaux ou modifiés, {len(dispo)}",
+        f"- MITM ajoutés, {len(mitm_entrees)}, retirés, {len(mitm_sorties)}, changements d'exploitant, {len(mitm_exploitant)}",
         "",
         "## Changements de titulaire", "",
         "Chaque ligne est une AMM qui a changé de mains. Le vendeur et l'acheteur sont des contacts à qualifier.", "",
@@ -202,6 +243,15 @@ def main():
     md += ["", "## Changements de statut d'AMM", ""]
     md += bullet_list(
         [f"**{r[1]}** (CIS {r[0]}). {r[5]} vers {r[6]}. Titulaire {r[7]}." for r in statuts], len(statuts))
+    md += ["", "## Ruptures, tensions et arrêts signalés", ""]
+    md += bullet_list(
+        [f"**{r[1] or r[0]}**. "
+         + (f"Nouveau signalement, {r[3]}" if r[2] == "nouveau signalement" else f"{r[2]} vers {r[3]}")
+         + f", depuis le {r[4]}. Titulaire {r[5] or 'non trouvé'}." for r in dispo],
+        len(dispo))
+    md += ["", "## Changements d'exploitant sur des MITM", ""]
+    md += bullet_list([f"**{r[1]}** (CIS {r[0]}). {r[2]} vers {r[3]}." for r in mitm_exploitant],
+                      len(mitm_exploitant))
     md += ["", "## Spécialités retirées de la base", ""]
     md += bullet_list([f"**{r[1]}** (CIS {r[0]}). Titulaire {r[2]}." for r in retirees], len(retirees))
     md += ["", f"Le détail complet est dans le dossier reports/{today}."]
