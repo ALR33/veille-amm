@@ -1,13 +1,13 @@
-Instantané du 2026-11-04 22:45 UTC
+Instantané du 2026-11-09 13:59 UTC
 Page de téléchargement lue, 11 liens .txt trouvés
 OK CIS_CIP_Dispo_Spec.txt 158130 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CIP_Dispo_Spec.txt
-OK CIS_CIP_bdpm.txt 4153746 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CIP_bdpm.txt
+OK CIS_CIP_bdpm.txt 4153078 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CIP_bdpm.txt
 OK CIS_COMPO_bdpm.txt 2720142 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_COMPO_bdpm.txt
 OK CIS_CPD_bdpm.txt 1335040 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_CPD_bdpm.txt
 OK CIS_GENER_bdpm.txt 1220713 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_GENER_bdpm.txt
 OK CIS_HAS_ASMR_bdpm.txt 4622428 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_HAS_ASMR_bdpm.txt
 OK CIS_HAS_SMR_bdpm.txt 4615538 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_HAS_SMR_bdpm.txt
-OK CIS_InfoImportantes.txt 4590537 octets https://base-donnees-publique.medicaments.gouv.fr/download/CIS_InfoImportantes.txt
+OK CIS_InfoImportantes.txt 4587648 octets https://base-donnees-publique.medicaments.gouv.fr/download/CIS_InfoImportantes.txt
 OK CIS_MITM.txt 1618769 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_MITM.txt
 OK CIS_bdpm.txt 3167022 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/CIS_bdpm.txt
 OK HAS_LiensPageCT_bdpm.txt 518890 octets https://base-donnees-publique.medicaments.gouv.fr/download/file/HAS_LiensPageCT_bdpm.txt

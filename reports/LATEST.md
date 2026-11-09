@@ -1,4 +1,4 @@
-# Veille BDPM du 2026-11-04
+# Veille BDPM du 2026-11-09
 
 ## En bref
 
@@ -6,7 +6,7 @@
 - Présentations passées en arrêt de commercialisation, 0
 - Spécialités dont l'état de commercialisation a changé, 0
 - Changements de statut d'AMM, 0
-- Baisses de prix, 0
+- Baisses de prix, 7
 - Spécialités retirées de la base, 0
 - Nouvelles spécialités, 0
 - Signalements de disponibilité nouveaux ou modifiés, 0
@@ -38,4 +38,4 @@ Chaque ligne est une AMM qui a changé de mains. Le vendeur et l'acheteur sont d
 
 - Aucun mouvement
 
-Le détail complet est dans le dossier reports/2026-11-04.
+Le détail complet est dans le dossier reports/2026-11-09.
